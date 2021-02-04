@@ -11,15 +11,13 @@ def queueServerSimulation(numberOfRecords):
 
     runningServiceTime = 0
     firstCustomerArrival = 0
-    lastCustomerDeparture = 0
-
 
     simulationData = pd.DataFrame(columns=['interArrivalTime', 'arrivalTime', 'waitingTime', 'timeOfService', 'servingTime', 'departureTime', "queueLength"])
 
     for i in range(numberOfRecords):
 
-        simulationData.at[i, 'interArrivalTime'] = np.random.uniform(uniformMinimum, uniformMaximum)
-        simulationData.at[i, 'servingTime'] = abs(np.random.normal(gaussianMean, gaussianSigma))
+        simulationData.at[i, 'interArrivalTime'] = round(np.random.uniform(uniformMinimum, uniformMaximum),2)
+        simulationData.at[i, 'servingTime'] = round(abs(np.random.normal(gaussianMean, gaussianSigma)),2)
 
         if(i>0):
 
@@ -38,9 +36,9 @@ def queueServerSimulation(numberOfRecords):
         lastCustomerDeparture = simulationData.loc[i]['departureTime']
         runningServiceTime += simulationData.loc[i]['servingTime']
 
-        utilizationFactor = runningServiceTime/(lastCustomerDeparture - firstCustomerArrival)
-        averageWaitingTime = simulationData['waitingTime'].mean()
-        averageTimeInSystem = statistics.mean(simulationData['departureTime'] - simulationData['arrivalTime'])
+        utilizationFactor = runningServiceTime/lastCustomerDeparture
+        averageWaitingTime = round(simulationData['waitingTime'].mean(),2)
+        averageTimeInSystem = round(statistics.mean(simulationData['departureTime'] - simulationData['arrivalTime']),2)
 
 
     # Calculating Queue length for each record
@@ -61,16 +59,16 @@ def queueServerSimulation(numberOfRecords):
                 simulationData.at[i, 'queueLength'] = queueLength
                 break;
 
-        averageQueueLength = simulationData['queueLength'].mean()
-        averageNumberSystem = -1
+        averageQueueLength = round(simulationData['queueLength'].mean(),2)
+        averageNumberSystem = averageQueueLength + 1 # avgQueueLength + numberOfServers
 
 
     print(simulationData.to_string())
-    print('\n\nUtilization Factor : ',utilizationFactor)
-    print('Average Number in Queue : ', averageQueueLength)
-    print('Average Number in the System : ', averageNumberSystem)
-    print('Average Waiting Time : ', averageWaitingTime)
-    print('Average Time in the System : ', averageTimeInSystem)
+    print('\n\nUtilization Factor : \t\t\t',utilizationFactor)
+    print('Average Number in Queue : \t', averageQueueLength)
+    print('Average Number in the System : \t', averageNumberSystem)
+    print('Average Waiting Time : \t\t', averageWaitingTime)
+    print('Average Time in the System : \t', averageTimeInSystem)
 
 
 
