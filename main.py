@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plot
 import numpy as np
 import pandas as pd
 import statistics
@@ -10,25 +11,35 @@ def queueServerSimulation(numberOfRecords):
     gaussianSigma = 5
 
     runningServiceTime = 0
-    firstCustomerArrival = 0
+    numberOfServers = 1
 
     simulationData = pd.DataFrame(columns=['interArrivalTime', 'arrivalTime', 'waitingTime', 'timeOfService', 'servingTime', 'departureTime', "queueLength"])
 
     for i in range(numberOfRecords):
+        #1
+        #simulationData.at[i, 'interArrivalTime'] = round(np.random.uniform(2, 8),2)
+        #simulationData.at[i, 'servingTime'] = round(abs(np.random.uniform(0.05, 0.15)),3)
 
-        simulationData.at[i, 'interArrivalTime'] = round(np.random.uniform(uniformMinimum, uniformMaximum),2)
-        simulationData.at[i, 'servingTime'] = round(abs(np.random.normal(gaussianMean, gaussianSigma)),2)
+        #2
+        simulationData.at[i, 'interArrivalTime'] = round(np.random.uniform(2, 8),2)
+        simulationData.at[i, 'servingTime'] = round(abs(np.random.normal(5, 1.5)),2)
+
+        #3
+        #simulationData.at[i, 'interArrivalTime'] = round(np.random.uniform(2, 8),2)
+        #simulationData.at[i, 'servingTime'] = round(abs(np.random.normal(5, 5)),2)
+        
+        #simulationData.at[i, 'interArrivalTime'] = round(np.random.uniform(uniformMinimum, uniformMaximum),2)
+        #simulationData.at[i, 'servingTime'] = round(abs(np.random.normal(gaussianMean, gaussianSigma)),2)
 
         if(i>0):
 
             simulationData.at[i, 'arrivalTime'] = simulationData.loc[i-1]['arrivalTime'] + simulationData.loc[i]['interArrivalTime']
-            simulationData.at[i, 'waitingTime'] = simulationData.loc[i - 1]['departureTime'] - simulationData.loc[i]['arrivalTime']
+            simulationData.at[i, 'waitingTime'] = max(simulationData.loc[i - 1]['departureTime'] - simulationData.loc[i]['arrivalTime'],0)
 
         else:
 
             simulationData.at[i, 'arrivalTime'] = simulationData.loc[i]['interArrivalTime']
             simulationData.at[i, 'waitingTime'] = 0
-            firstCustomerArrival = simulationData.loc[i]['arrivalTime']
 
         simulationData.at[i, 'timeOfService'] = simulationData.loc[i]['arrivalTime'] + simulationData.loc[i]['waitingTime']
         simulationData.at[i, 'departureTime'] = simulationData.loc[i]['timeOfService'] + simulationData.loc[i]['servingTime']
@@ -60,19 +71,30 @@ def queueServerSimulation(numberOfRecords):
                 break;
 
         averageQueueLength = round(simulationData['queueLength'].mean(),2)
-        averageNumberSystem = averageQueueLength + 1 # avgQueueLength + numberOfServers
+        averageNumberSystem = averageQueueLength + numberOfServers
 
 
+    simulationData.plot.line(y="queueLength");
+    simulationData.plot.line(y="waitingTime");
+    plot.show()
+
+    #Print entire Dataframe
     print(simulationData.to_string())
-    print('\n\nUtilization Factor : \t\t\t',utilizationFactor)
-    print('Average Number in Queue : \t', averageQueueLength)
+
+    #Print Dataframe Summary
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', None)
+    print(simulationData)
+
+    print('\n\nUtilization Factor : \t\t\t', utilizationFactor)
+    print('Average Number in Queue : \t\t', averageQueueLength)
     print('Average Number in the System : \t', averageNumberSystem)
-    print('Average Waiting Time : \t\t', averageWaitingTime)
+    print('Average Waiting Time : \t\t\t', averageWaitingTime)
     print('Average Time in the System : \t', averageTimeInSystem)
 
 
 
-queueServerSimulation(100)
+queueServerSimulation(1000)
 
 ## List columns
 ## 0 - Inter Arrival Time
